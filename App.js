@@ -3,6 +3,18 @@ import RootNavigation from "./navigation";
 import Home from "./screens/Home";
 import RestaurantDetail from "./screens/RestaurantDetail";
 
+import { LogBox } from "react-native";
+import _ from "lodash";
+
+LogBox.ignoreLogs(["Setting a timer"]); // ignore specific logs
+LogBox.ignoreAllLogs(); // ignore all logs
+const _console = _.clone(console);
+console.warn = (message) => {
+  if (message.indexOf("Setting a timer") <= -1) {
+    _console.warn(message);
+  }
+};
+
 if (Platform.OS === "android") {
   // only android needs polyfill
   require("intl"); // import intl object
