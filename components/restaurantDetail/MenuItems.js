@@ -9,7 +9,9 @@ import {
   SafeAreaView,
   StatusBar,
 } from "react-native";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { Divider } from "react-native-elements";
+import { useDispatch, useSelector } from "react-redux";
 
 const foods = [
   {
@@ -51,18 +53,47 @@ const foods = [
   },
 ];
 
-const MenuItems = () => {
+const MenuItems = ({ restaurantName }) => {
+  const dispatch = useDispatch();
+  const selectItem = (item, checkboxValue) =>
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: {
+        ...item,
+        restaurantName: restaurantName,
+        checkboxValue: checkboxValue,
+      },
+    });
+
+  const cartItems = useSelector(
+    (state) => state.cartReducer.selectedItems.items
+  );
+
+  const isFoodInCart = (food, cartItems) => {
+    return Boolean(cartItems.find((item) => item.title === food.title));
+  };
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       {foods.map((food, index) => (
         <View key={index}>
           <View style={styles.menuItemStyle}>
+            <BouncyCheckbox
+              iconStyle={{ borderColor: "lightgray", borderRadius: 0 }}
+              fillColor="green"
+              onPress={(checkboxValue) => selectItem(food, checkboxValue)}
+              isChecked={isFoodInCart(food, cartItems)}
+            />
             <FoodInfo food={food} />
             <FoodImage food={food} />
           </View>
-          <Divider width={0.5} orientation="vertical" />
+          <Divider
+            width={0.5}
+            orientation="vertical"
+            style={{ marginHorizontal: 20 }}
+          />
         </View>
       ))}
+      <View style={{ height: 100 }}></View>
     </ScrollView>
   );
 };
